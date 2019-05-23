@@ -1,142 +1,77 @@
+
 <!DOCTYPE html>
-<html lang='en'>
+<html lang="en" >
+
 <head>
-<title>Moon Phase</title>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
-<style>
-@import url('https://fonts.googleapis.com/css?family=Offside');
-body {
-  background-color:black;
-}
-#container {
-  width:500px;
-  margin:auto;
+  <meta charset="UTF-8">
+  <title>Moon Phase</title>
   
-}
-p {
-  font-family:'Offside', sans-serif;
-  font-size:1.8em;
-  color:white;
-  text-align:center;
-  text-shadow:0 0 10px #fff;
-  float:left;
-  margin-left:30px;
-  margin-top:110px;
-}
-#moonCanvas {
-  display:block;
-  margin:50px auto;
-  float:left
-}
-</style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
 
+  
+      <link rel="stylesheet" href="css/style.css">
+
+  
 </head>
-<body onload="alert('Welcome to the moon phase program\nThis program shows the moon phase for today\n\n\nProgrammed by HUNTER A. McCABE');">
-  <div id="container">
-  <canvas id="moonCanvas" width="200px" height="200px"></canvas> 
-  <p>Tonight's moon<br/>
-    <span id="day">11</span>/<span id="month">11</span>/<span id="year">11</span>
-  </p>
-</div>
- <script>
 
-//gets todays date and calls on the draw function
-function initLunarPhase(){
-  var $date=new Date();
-  var $year=$date.getFullYear();
-  var $month=$date.getMonth()+1;
-  var $day=$date.getDate();
- 
-  document.getElementById('day').innerHTML=$day;
-  if ($month<10) {
-    document.getElementById('month').innerHTML='0'+$month;
-  }
-  else {
-    document.getElementById('month').innerHTML=$month;
-  }
-  document.getElementById('year').innerHTML=$year;
+<body>
+
+  <div class="wrapper">
+  <header class="row">
+    <h1 class="h h1">Moon Phase App</h1>
+  </header>
+    <div class="row">
+        <ul class="data-table h3">
+             <li>
+                <strong class="label">Current Date</strong><span class="value js-current-date-value"></span>
+            </li>
+
+            <li>
+                <strong class="label">Selected Date</strong><span class="js-date-value value"></span>
+            </li>
+        </ul>
+    </div>
+    <div class="row">
+            <ul class="hlist">
+                <li>
+                    <a href="#" data-name="prev" class="js-date-nav btn">&laquo; Back One Day</a>
+                </li>
+                <li>
+                    <a href="#" data-name="current" class="js-date-nav btn">Today</a>
+                </li>
+                <li>
+                    <a href="#" data-name="next" class="js-date-nav btn">Forward One Day &raquo;</a>
+                </li>
+            </ul>
+    </div>
+
+    <div class="row">
+        <canvas class="column" id="currentphase" height="288" width="288">
+            You need a browser that supports HTML5 and JavaScript enabled to see this.
+        </canvas>
+        <div class="column-last">
+            <h3 class="h h3">Current Phase Data</h3>
+            <ul class="data-table js-moon-data">
+                <li><strong class="label">Current Phase</strong> <span data-name="currentPhase" class="value"></span></li>
+                <li><strong class="label">Julian Date</strong> <span data-name="julianDate" class="value"></span></li>
+                <li><strong class="label">Moon's Age</strong> <span data-name="synodicAge" class="value"></span></li>
+                <li><strong class="label">Phase Angle</strong> <span data-name="phaseAngle" class="value"></span></li>
+                <li><strong class="label">Percent Illuminated</strong> <span data-name="illumination" class="value"></span></li>
+                <li><strong class="label">Distance</strong> <span data-name="distance" class="value"></span></li>
+            </ul>
+        </div>
+    </div>
+</div> <!-- .wrapper -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/ocanvas/2.8.3/ocanvas.min.js'></script>
+<script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+
   
-  var $moonPhase=moonPhase($year,$month,$day);
-  drawMoon($moonPhase-1);
-}
+
+    <script  src="js/index.js"></script>
 
 
-//function that calculates the moon phase given a certain day
-function moonPhase(year,month,day) {
-  n = Math.floor(12.37 * (year -1900 + ((1.0 * month - 0.5)/12.0)));
-  RAD = 3.14159265/180.0;
-  t = n / 1236.85;
-	t2 = t * t;
-	as = 359.2242 + 29.105356 * n;
-	am = 306.0253 + 385.816918 * n + 0.010730 * t2;
-	xtra = 0.75933 + 1.53058868 * n + ((1.178e-4) - (1.55e-7) * t) * t2;
-	xtra += (0.1734 - 3.93e-4 * t) * Math.sin(RAD * as) - 0.4068 * Math.sin(RAD * am);
-	i = (xtra > 0.0 ? Math.floor(xtra) :  Math.ceil(xtra - 1.0));
-	j1 = julday(year,month,day);
-	jd = (2415020 + 28 * n) + i;
-	return (j1-jd + 30)%30;
-}
-
-//function that calculates julian date
-function julday(year, month, day) {
-	if (year < 0) { year ++; }
-	var jy = parseInt(year);
-	var jm = parseInt(month) +1;
-	if (month <= 2) {jy--;	jm += 12;	} 
-	var jul = Math.floor(365.25 *jy) + Math.floor(30.6001 * jm) + parseInt(day) + 1720995;
-	if (day+31*(month+12*year) >= (15+31*(10+12*1582))) {
-		ja = Math.floor(0.01 * jy);
-		jul = jul + 2 - ja + Math.floor(0.25 * ja);
-	}
-	return jul;
-}
-
-//draws the lunar phase
-function drawMoon($moonPhase){
-  var $moonCanvas=document.getElementById('moonCanvas');
-  var $ctx=$moonCanvas.getContext('2d');
-  
-  //draw half moon
-  var $radius=100;
-  var $centerX=$moonCanvas.width/2;
-  var $centerY=$moonCanvas.height/2;
-  var $moonFill=$ctx.createRadialGradient($centerX, $centerY, $radius, $centerX, $centerY, 90);
-  $moonFill.addColorStop(0,   'black');
-  $moonFill.addColorStop(1, 'white');
-  
-  $ctx.beginPath();
-  $ctx.arc($centerX,$centerY,$radius,270*(Math.PI/180),90*(Math.PI/180),($moonPhase<15)?false:true);
-  $ctx.fillStyle=$moonFill;
-  $ctx.fill();
-  
-  //draw moon fill
-  var $ovalWidth=-200;
-  $ovalWidth=($moonPhase<15)?-200+$moonPhase*28.5:200-(($moonPhase-15)*28.5);
-  var $ovalColor=($ovalWidth>0)? $moonFill:'black';
-  
-  drawEllipse($ctx,$centerX-$ovalWidth/2,0,$ovalWidth,200,$ovalColor);
-  function drawEllipse(ctx, x, y, w, h,fill) {
-    var kappa = .5522848;
-        ox = (w / 2) * kappa, // control point offset horizontal
-        oy = (h / 2) * kappa, // control point offset vertical
-        xe = x + w,           // x-end
-        ye = y + h,           // y-end
-        xm = x + w / 2,       // x-middle
-        ym = y + h / 2;       // y-middle
-  
-    ctx.beginPath();
-    ctx.moveTo(x, ym);
-    ctx.bezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
-    ctx.bezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);
-    ctx.bezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);
-    ctx.bezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
-    ctx.fillStyle=$ovalColor;
-    ctx.fill();
-  }
-};
 
 
-initLunarPhase();
-</script>
 </body>
+
 </html>
